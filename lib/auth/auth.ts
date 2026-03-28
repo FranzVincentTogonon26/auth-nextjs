@@ -3,18 +3,24 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/drizzle/db"; // your drizzle instance
 import { nextCookies } from "better-auth/next-js";
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required env var: ${name}`);
+  return value;
+}
+
 export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
     socialProviders: {
         github: {
-            clientId: process.env.GITHUB_CLIENT_ID!,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+            clientId: requireEnv("GITHUB_CLIENT_ID"),
+            clientSecret: requireEnv("GITHUB_CLIENT_SECRET"),
         },
         google: {
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            clientId: requireEnv("GOOGLE_CLIENT_ID"),
+            clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
         },
     },
     session: {
