@@ -1,14 +1,17 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth/auth-client";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { SignUpTab } from "./_components/sign-up-tab";
 import { SignInTab } from "./_components/sign-in-tab";
 import { SocialAuthButtons } from "./_components/social-auth-buttons";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/auth-client";
+import { EmailVerification } from "./_components/email-verification";
+import { ForgotPassword } from "./_components/forgot-password";
 
 type Tabs = "signin" | "signup" | "email-verification" | "forgot-password"
 
@@ -16,12 +19,18 @@ export default function LoginPage() {
 
   const router = useRouter()
   const [selectedTab, setSelectedTab] = useState<Tabs>('signin')
+  const [email, setEmail] = useState("")
 
   useEffect(() => {
     authClient.getSession().then(session => {
       if (session.data != null) router.push("/")
     })
   }, [router])
+
+  function openEmailVerificationTab( email: string ){
+    setEmail(email)
+    setSelectedTab("email-verification")
+  }
 
 
   return (
@@ -48,7 +57,10 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SignInTab />
+              <SignInTab 
+                openEmailVerificationTab={openEmailVerificationTab}
+                openForgotPassword={() => setSelectedTab("forgot-password")}
+              />
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-3">
               <SocialAuthButtons />
@@ -66,13 +78,37 @@ export default function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SignUpTab />
+              <SignUpTab openEmailVerificationTab={openEmailVerificationTab} />
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-3">
               <SocialAuthButtons />
-          </CardFooter>
+            </CardFooter>
           </Card>
         </TabsContent>     
+
+        {/* Email Verification */}
+        <TabsContent value="email-verification" >
+          <Card className="w-full ">
+            <CardHeader>
+              <CardTitle className="text-2xl py-1">Verify Your Email</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <EmailVerification email={email} />
+            </CardContent>
+          </Card>
+        </TabsContent>     
+
+        {/* Forgot Password */}
+        <TabsContent value="forgot-password" >
+          <Card className="w-full ">
+            <CardHeader>
+              <CardTitle className="text-2xl py-1">Forgot Password</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ForgotPassword openSignInTab={() => setSelectedTab("signin")} />
+            </CardContent>
+          </Card>
+        </TabsContent>   
 
     </Tabs>
     </div>

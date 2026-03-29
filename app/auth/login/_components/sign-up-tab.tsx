@@ -18,7 +18,9 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>
 
-export function SignUpTab(){
+export function SignUpTab(
+  { openEmailVerificationTab } : { openEmailVerificationTab: (email: string) => void }
+){
 
     const form = useForm<SignUpForm>({
         resolver: zodResolver(signUpSchema),
@@ -40,10 +42,8 @@ export function SignUpTab(){
         }
       )
 
-      console.log(response)
-
       if (response.error == null && !response.data.user.emailVerified) {
-        // openEmailVerificationTab(data.email)
+        openEmailVerificationTab(data.email)
       }
 
     }
@@ -53,7 +53,7 @@ export function SignUpTab(){
     return (
         <form className="" onSubmit={form.handleSubmit(handleSignUp)}>
           <FieldGroup>
-            <div className="space-y-5 mt-5">
+            <div className="space-y-10 mt-5">
             <Controller
               name="name"
               control={form.control}
