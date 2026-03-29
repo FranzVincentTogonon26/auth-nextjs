@@ -13,7 +13,7 @@ export function SocialAuthButtons() {
 
     return (
       <BetterAuthActionButton
-        className="h-10"
+        className="h-11"
         variant="outline"
         key={provider}
         action={() => {

@@ -30,7 +30,8 @@ export function SignUpTab(){
     })
 
     async function handleSignUp(data: SignUpForm){
-      await authClient.signUp.email(
+
+      const response = await authClient.signUp.email(
         { ...data, callbackURL: '/'},
         {
           onError: error => {
@@ -38,6 +39,13 @@ export function SignUpTab(){
           }
         }
       )
+
+      console.log(response)
+
+      if (response.error == null && !response.data.user.emailVerified) {
+        // openEmailVerificationTab(data.email)
+      }
+
     }
     
     const { isSubmitting } = form.formState
