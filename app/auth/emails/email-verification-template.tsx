@@ -57,7 +57,7 @@ export function EmailVerificationTemplate({
 
           <Text>This link will expire in 24 hours.</Text>
 
-          <Text>— Your App Team</Text>
+          <Text>Franz</Text>
         </Container>
       </Body>
     </Html>

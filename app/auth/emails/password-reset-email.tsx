@@ -51,12 +51,12 @@ export function EmailResetPasswordTemplate({
           </Button>
 
           <Text>
-            If you didn {"'"}t request this, please ignore this email.
+            If you didn{"'"}t request this, please ignore this email.
           </Text>
 
           <Text>This link will expire in 24 hours.</Text>
 
-          <Text>— Your App Team</Text>
+          <Text>Franz</Text>
         </Container>
       </Body>
     </Html>
