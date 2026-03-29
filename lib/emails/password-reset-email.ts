@@ -1,7 +1,14 @@
 import { Resend } from 'resend';
 import { EmailResetPasswordTemplate } from '@/app/auth/emails/password-reset-email';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY!;
+const resendFromEmail = process.env.RESEND_FROM_EMAIL!;
+
+if (!resendApiKey || !resendFromEmail) {
+  throw new Error('Missing RESEND_API_KEY or RESEND_FROM_EMAIL');
+}
+
+const resend = new Resend(resendApiKey);
 
 export function sendPasswordResetEmail({
     user,
@@ -12,7 +19,7 @@ export function sendPasswordResetEmail({
 }) {
 
     return resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL!,
+      from: resendFromEmail,
       to: user.email,
       subject: "Reset your password",
       react: EmailResetPasswordTemplate({ user, url }),

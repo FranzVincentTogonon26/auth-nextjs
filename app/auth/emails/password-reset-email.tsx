@@ -1,21 +1,64 @@
+import {
+  Html,
+  Body,
+  Container,
+  Text,
+  Heading,
+  Button,
+} from "@react-email/components";
+
 interface EmailResetPasswordTemplateProps {
   user: {
-    name: string
-    email: string
-  }
-  url: string
+    name: string;
+    email: string;
+  };
+  url: string;
 }
 
-export function EmailResetPasswordTemplate({ user, url, }: EmailResetPasswordTemplateProps) {
+export function EmailResetPasswordTemplate({
+  user,
+  url,
+}: EmailResetPasswordTemplateProps) {
   return (
-    <div className='m-auto max-w-[600px]'>
-        <h2 className='text-3xl font-bold'>Reset Your Password</h2>
-        <p>Hello {user.name},</p>
-        <p>You requested to reset your password. Click the button below to reset it:</p>
-        <a href={url} >Reset Password</a>
-        <p>If you didn {"'"}t request this, please ignore this email.</p>
-        <p>This link will expire in 24 hours.</p>
-        <p>Best regards,Your App Team</p>
-    </div>
+    <Html>
+      <Body style={{ backgroundColor: "#f6f9fc", padding: "20px" }}>
+        <Container
+          style={{
+            backgroundColor: "#ffffff",
+            padding: "24px",
+            borderRadius: "8px",
+          }}
+        >
+          <Heading>Reset Your Password</Heading>
+
+          <Text>Hello {user.name},</Text>
+
+          <Text>
+            You requested to reset your password. Click the button below to reset it:
+          </Text>
+
+          <Button
+            href={url}
+            style={{
+              backgroundColor: "#000",
+              color: "#fff",
+              padding: "12px 20px",
+              borderRadius: "6px",
+              textDecoration: "none",
+            }}
+          >
+            Reset Password
+          </Button>
+
+          <Text>
+            If you didn {"'"}t request this, please ignore this email.
+          </Text>
+
+          <Text>This link will expire in 24 hours.</Text>
+
+          <Text>— Your App Team</Text>
+        </Container>
+      </Body>
+    </Html>
   );
 }
