@@ -63,12 +63,13 @@ export function EmailVerification({ email }: { email: string }) {
         className="w-full"
         successMessage="Verification email sent!"
         disabled={timeToNextResend > 0}
-        action={() => {
-          startCountdown()
-          return authClient.sendVerificationEmail({
+        action={async () => {
+          const res = await authClient.sendVerificationEmail({
             email,
             callbackURL: "/",
           })
+          if (!res.error) startCountdown()
+          return res
         }}
       >
         {timeToNextResend > 0

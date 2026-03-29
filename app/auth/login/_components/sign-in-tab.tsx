@@ -43,7 +43,7 @@ export function SignInTab(
         { ...data, callbackURL: '/'},
         {
           onError: error => {
-            if (error.error.code === "EMAIL_NOT_VERIFIED") {
+            if (error?.error?.code === "EMAIL_NOT_VERIFIED") {
               openEmailVerificationTab(data.email)
             }
             toast.error( error.error.message || 'Failed to sign in')
