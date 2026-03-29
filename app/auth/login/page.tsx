@@ -23,7 +23,7 @@ export default function LoginPage() {
       className="w-full max-w-lg px-6"
     >
       { (selectedTab === 'signin' || selectedTab === 'signup') && (
-      <TabsList className="grid grid-cols-2 h-10!">
+      <TabsList className="grid grid-cols-2 !h-10">
         <TabsTrigger value={"signin"}>Sign In</TabsTrigger>
         <TabsTrigger value={"signup"}>Sign Up</TabsTrigger>
       </TabsList>

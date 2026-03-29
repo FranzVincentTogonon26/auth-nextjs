@@ -12,10 +12,8 @@ export function LoadingSwap({
   className?: string
 }) {
   return (
-    <div aria-busy={isLoading} className="grid grid-cols-1 items-center justify-items-center">
+    <div className="grid grid-cols-1 items-center justify-items-center">
       <div
-        role="status"
-        aria-live="polite"
         className={cn(
           "col-start-1 col-end-2 row-start-1 row-end-2 w-full",
           isLoading ? "invisible" : "visible",
@@ -31,8 +29,7 @@ export function LoadingSwap({
           className,
         )}
       >
-        <Loader2Icon aria-hidden="true" className="animate-spin" />
-        <span className="sr-only">Loading</span>
+        <Loader2Icon className="animate-spin" />
       </div>
     </div>
   )
