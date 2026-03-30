@@ -66,7 +66,7 @@ export const auth = betterAuth({
                 email: ctx.body.email,
             }
 
-            if (user != null) {
+            if (user != null && user.email && user.name) {
                 await sendWelcomeEmail({ user })
             }
         }

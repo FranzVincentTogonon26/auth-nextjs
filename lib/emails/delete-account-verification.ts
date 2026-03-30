@@ -19,15 +19,22 @@ export async function sendDeleteAccountVerificationEmail({
 }) {
 
   try {
-    await resend.emails.send({
+
+    const { error } = await resend.emails.send({
       from: resendFromEmail,
       to: user.email,
       subject: "Delete your account",
       react: DeleteAccountTemplate({ user, url }),
     });
-    console.log("Email sent successfully");
+
+    if (error) {
+      console.error("Failed to send delete-account email", error);
+      throw error;
+    }
+
   } catch (err) {
-    console.error("Failed to send email", err);
+    console.error("Failed to send delete-account email", err);
+    throw err;
   }
 
 }

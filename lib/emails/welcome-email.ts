@@ -26,6 +26,7 @@ export async function sendWelcomeEmail({
     console.log("Email sent successfully");
   } catch (err) {
     console.error("Failed to send email", err);
+    throw err;
   }
 
 }
