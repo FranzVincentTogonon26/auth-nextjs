@@ -10,15 +10,22 @@ if (!resendApiKey || !resendFromEmail) {
 
 const resend = new Resend(resendApiKey);
 
-export function sendWelcomeEmail({
+export async function sendWelcomeEmail({
   user
 }: {
   user: { email: string; name: string }
 }) {
-  return resend.emails.send({
-    from: resendFromEmail,
-    to: user.email,
-    subject: "Verify your email address",
-    react: WelcomeEmailTemplate({ user }),
-  });
+
+  try {
+    await resend.emails.send({
+      from: resendFromEmail,
+      to: user.email,
+      subject: "Verify your email address",
+      react: WelcomeEmailTemplate({ user }),
+    });
+    console.log("Email sent successfully");
+  } catch (err) {
+    console.error("Failed to send email", err);
+  }
+
 }

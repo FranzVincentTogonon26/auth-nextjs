@@ -46,8 +46,8 @@ export function ProfileUpdateForm(
         if (data.email !== user.email) {
             promises.push(
                 authClient.changeEmail({
-                newEmail: data.email,
-                callbackURL: "/profile",
+                    newEmail: data.email,
+                    callbackURL: "/profile",
                 })
             )
         }
@@ -67,7 +67,9 @@ export function ProfileUpdateForm(
             } else {
                 toast.success("Profile updated successfully")
             }
+
             router.refresh()
+            
         }
     }
 
@@ -80,10 +82,9 @@ export function ProfileUpdateForm(
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid} >
-                  <FieldLabel htmlFor="fieldgroup-name"> Name </FieldLabel>
+                  <FieldLabel> Name </FieldLabel>
                   <Input
                     {...field}
-                    id="fieldgroup-name"
                     className='h-10 border-0'
                     type='text'
                     aria-invalid={fieldState.invalid}

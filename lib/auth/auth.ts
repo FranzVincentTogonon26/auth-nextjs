@@ -7,8 +7,20 @@ import { createAuthMiddleware } from "better-auth/api";
 import { sendPasswordResetEmail } from "../emails/password-reset-email"
 import { sendEmailVerificationEmail } from "../emails/email-verification"
 import { sendWelcomeEmail } from "../emails/welcome-email";
+import { sendDeleteAccountVerificationEmail } from "../emails/delete-account-verification";
 
 export const auth = betterAuth({
+    user: {
+        changeEmail: {
+            enabled: true
+        },
+        deleteUser: {
+            enabled: true,
+            sendDeleteAccountVerification: async ({ user, url }) => {
+                await sendDeleteAccountVerificationEmail({ user, url })
+            }
+        }
+    },
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,

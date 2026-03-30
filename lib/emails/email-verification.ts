@@ -10,17 +10,24 @@ if (!resendApiKey || !resendFromEmail) {
 
 const resend = new Resend(resendApiKey);
 
-export function sendEmailVerificationEmail({
+export async function sendEmailVerificationEmail({
   user,
   url,
 }: {
   user: { email: string; name: string };
   url: string;
 }) {
-  return resend.emails.send({
-    from: resendFromEmail,
-    to: user.email,
-    subject: "Verify your email address",
-    react: EmailVerificationTemplate({ user, url }),
-  });
+
+  try {
+    await resend.emails.send({
+      from: resendFromEmail,
+      to: user.email,
+      subject: "Verify your email address",
+      react: EmailVerificationTemplate({ user, url }),
+    });
+    console.log("Email sent successfully");
+  } catch (err) {
+    console.error("Failed to send email", err);
+  }
+
 }

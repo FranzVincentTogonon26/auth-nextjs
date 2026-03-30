@@ -42,8 +42,12 @@ export function SignInTab(
       await authClient.signIn.email(
         { ...data, callbackURL: '/'},
         {
-          onError: error => {
+          onError: async (error) => {
             if (error?.error?.code === "EMAIL_NOT_VERIFIED") {
+              await authClient.sendVerificationEmail({
+                email: data.email,
+                callbackURL: "/",
+              })
               openEmailVerificationTab(data.email)
             }
             toast.error( error.error.message || 'Failed to sign in')

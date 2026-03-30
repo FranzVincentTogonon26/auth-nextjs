@@ -1,19 +1,25 @@
+import { ReactNode, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { auth } from "@/lib/auth/auth"
-import { ArrowLeft, Key, LinkIcon, Shield, Trash2, User } from "lucide-react"
+import { ArrowLeft, Key, LinkIcon, Loader2Icon, Shield, Trash2, User } from "lucide-react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { ProfileUpdateForm } from "./_components/profile-update-form"
+import { SetPasswordButton } from "./_components/set-password-button"
+import { ChangePasswordForm } from "./_components/change-password-form"
+import { SessionManagement } from "./_components/session-management"
+import { AccountLinking } from "./_components/account-linking"
+import { AccountDeletion } from "./_components/account-deletion"
 
 export default async function ProfilePage(){
 
     const session = await auth.api.getSession({ headers: await headers() })
+    
     if(session === null) return redirect("/auth/login")
 
     return (
@@ -82,24 +88,24 @@ export default async function ProfilePage(){
                 </TabsContent>
 
                 <TabsContent value="security">
-                    {/* <LoadingSuspense>
+                    <LoadingSuspense>
                         <SecurityTab
                         email={session.user.email}
-                        isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
+                        // isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
                         />
-                    </LoadingSuspense> */}
+                    </LoadingSuspense>
                 </TabsContent>
 
                 <TabsContent value="sessions">
-                    {/* <LoadingSuspense>
+                    <LoadingSuspense>
                         <SessionsTab currentSessionToken={session.session.token} />
-                    </LoadingSuspense> */}
+                    </LoadingSuspense>
                 </TabsContent>
 
                 <TabsContent value="accounts">
-                    {/* <LoadingSuspense>
+                    <LoadingSuspense>
                         <LinkedAccountsTab />
-                    </LoadingSuspense> */}
+                    </LoadingSuspense>
                 </TabsContent>
 
                 <TabsContent value="danger">
@@ -108,7 +114,7 @@ export default async function ProfilePage(){
                             <CardTitle className="text-destructive">Danger Zone</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {/* <AccountDeletion /> */}
+                            <AccountDeletion />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -116,4 +122,82 @@ export default async function ProfilePage(){
 
         </div>
     )
+} 
+
+async function LinkedAccountsTab() {
+  const accounts = await auth.api.listUserAccounts({ headers: await headers() })
+  const nonCredentialAccounts = accounts.filter(
+    a => a.providerId !== "credential"
+  )
+
+  return (
+    <Card>
+      <CardContent>
+        <AccountLinking currentAccounts={nonCredentialAccounts} />
+      </CardContent>
+    </Card>
+  )
+}
+
+async function SessionsTab({
+  currentSessionToken,
+}: {
+  currentSessionToken: string
+}) {
+  const sessions = await auth.api.listSessions({ headers: await headers() })
+
+  return (
+    <Card>
+      <CardContent>
+        <SessionManagement
+          sessions={sessions}
+          currentSessionToken={currentSessionToken}
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+async function SecurityTab({ email } : { email: string }){
+
+    const accounts = await auth.api.listUserAccounts({ headers: await headers() })
+    const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
+
+    return (
+        <div className="space-y-6">
+        {hasPasswordAccount ? (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Change Password</CardTitle>
+                    <CardDescription>
+                    Update your password for improved security.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChangePasswordForm />
+                </CardContent>
+            </Card>
+         ) : (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Set Password</CardTitle>
+                    <CardDescription>
+                    We will send you a password reset email to set up a password.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <SetPasswordButton email={email} />
+                </CardContent>
+            </Card>
+        )}
+        </div>
+    )
+}
+
+function LoadingSuspense({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<Loader2Icon className="size-20 animate-spin" />}>
+      {children}
+    </Suspense>
+  )
 }
