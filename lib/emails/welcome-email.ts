@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { EmailVerificationTemplate } from '@/app/auth/emails/email-verification-template';
+import { WelcomeEmailTemplate } from '@/app/auth/emails/welcome-email-template';
 
 const resendApiKey = process.env.RESEND_API_KEY!;
 const resendFromEmail = process.env.RESEND_FROM_EMAIL!;
@@ -10,12 +10,10 @@ if (!resendApiKey || !resendFromEmail) {
 
 const resend = new Resend(resendApiKey);
 
-export async function sendEmailVerificationEmail({
-  user,
-  url,
+export async function sendWelcomeEmail({
+  user
 }: {
-  user: { email: string; name: string };
-  url: string;
+  user: { email: string; name: string }
 }) {
 
   try {
@@ -23,7 +21,7 @@ export async function sendEmailVerificationEmail({
       from: resendFromEmail,
       to: user.email,
       subject: "Verify your email address",
-      react: EmailVerificationTemplate({ user, url }),
+      react: WelcomeEmailTemplate({ user }),
     });
     console.log("Email sent successfully");
   } catch (err) {

@@ -10,7 +10,7 @@ if (!resendApiKey || !resendFromEmail) {
 
 const resend = new Resend(resendApiKey);
 
-export function sendPasswordResetEmail({
+export async function sendPasswordResetEmail({
     user,
     url,
 } : {
@@ -18,11 +18,17 @@ export function sendPasswordResetEmail({
     url: string
 }) {
 
-    return resend.emails.send({
+  try {
+    await resend.emails.send({
       from: resendFromEmail,
       to: user.email,
       subject: "Reset your password",
       react: EmailResetPasswordTemplate({ user, url }),
     });
+    console.log("Email sent successfully");
+  } catch (err) {
+    console.error("Failed to send email", err);
+    throw err;
+  }
 
 }

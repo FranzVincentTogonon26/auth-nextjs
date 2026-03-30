@@ -27,7 +27,7 @@ export default function LoginPage() {
     })
   }, [router])
 
-  function openEmailVerificationTab( email: string ){
+  async function openEmailVerificationTab( email: string ){
     setEmail(email)
     setSelectedTab("email-verification")
   }
@@ -90,7 +90,7 @@ export default function LoginPage() {
         <TabsContent value="email-verification" >
           <Card className="w-full ">
             <CardHeader>
-              <CardTitle className="text-2xl py-1">Verify Your Email</CardTitle>
+              <CardTitle className="text-2xl py-1">Verify Your Email </CardTitle>
             </CardHeader>
             <CardContent>
               <EmailVerification email={email} />

@@ -3,68 +3,99 @@
 import z from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod' 
+import { toast } from "sonner"
 import { authClient } from '@/lib/auth/auth-client'
-import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { useRouter } from 'next/navigation'
 
-const signInSchema = z.object({
+const profileUpdateSchema  = z.object({
+    name: z.string().min(1),
     email: z.email().min(1),
-    password: z.string().min(6),
 })
 
-type SignInForm = z.infer<typeof signInSchema>
+type ProfileUpdateForm  = z.infer<typeof profileUpdateSchema >
 
-export function SignInTab(
-  {
-    openEmailVerificationTab,
-    openForgotPassword
-  } : {
-    openEmailVerificationTab: (email: string) => void
-    openForgotPassword: () => void
-  }
-){
+export function ProfileUpdateForm(
+    { 
+        user 
+    } : { 
+        user: {
+            email: string
+            name: string
+        }
+    }){
 
     const router = useRouter()
-
-    const form = useForm<SignInForm>({
-        resolver: zodResolver(signInSchema),
-        defaultValues: {
-            email: "",
-            password: "", 
-        }
+    const form = useForm<ProfileUpdateForm >({
+        resolver: zodResolver(profileUpdateSchema),
+        defaultValues: user
     })
 
-    async function handleSignIn(data: SignInForm){
-      await authClient.signIn.email(
-        { ...data, callbackURL: '/'},
-        {
-          onError: async (error) => {
-            if (error?.error?.code === "EMAIL_NOT_VERIFIED") {
-              await authClient.sendVerificationEmail({
-                email: data.email,
-                callbackURL: "/",
-              })
-              openEmailVerificationTab(data.email)
-            }
-            toast.error( error.error.message || 'Failed to sign in')
-          },
-          onSuccess: () => {
-            router.push("/")
-          },
-        }
-      )
-    }
-    
     const { isSubmitting } = form.formState
 
+    async function handleProfileUpdate(data: ProfileUpdateForm) {
+        const promises = [
+            authClient.updateUser({
+                name: data.name
+            }),
+        ]
+
+        if (data.email !== user.email) {
+            promises.push(
+                authClient.changeEmail({
+                    newEmail: data.email,
+                    callbackURL: "/profile",
+                })
+            )
+        }
+
+        const res = await Promise.all(promises)
+
+        const updateUserResult = res[0]
+        const emailResult = res[1] ?? { error: false }
+
+        if (updateUserResult.error) {
+            toast.error(updateUserResult.error.message || "Failed to update profile")
+        } else if (emailResult.error) {
+            toast.error(emailResult.error.message || "Failed to change email")
+        } else {
+            if (data.email !== user.email) {
+                toast.success("Verify your new email address to complete the change.")
+            } else {
+                toast.success("Profile updated successfully")
+            }
+
+            router.refresh()
+            
+        }
+    }
+
     return (
-        <form className="" onSubmit={form.handleSubmit(handleSignIn)}>
+        <form className="" onSubmit={form.handleSubmit(handleProfileUpdate)}>
           <FieldGroup>
-            <div className="space-y-7 mt-5">
+            <div className="space-y-10 mt-5">
+            <Controller
+              name="name"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid} >
+                  <FieldLabel> Name </FieldLabel>
+                  <Input
+                    {...field}
+                    className='h-10 border-0'
+                    type='text'
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="off"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
             <Controller
               name="email"
               control={form.control}
@@ -84,47 +115,17 @@ export function SignInTab(
                 </Field>
               )}
             />
-            <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid} >
-                  <div className="flex justify-between">
-                    <FieldLabel> Password </FieldLabel>
-                    <div className="text-right">
-                      <button
-                        type="button"
-                        onClick={openForgotPassword}
-                        className="text-sm hover:underline"
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-                  </div>
-                  <Input
-                    {...field}
-                    className='h-10 border-0'
-                    type='password'
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="off"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
             </div>
             <div className="py-4">
                 <Button type="submit" disabled={isSubmitting} className='w-full h-11'>
                    { isSubmitting ? (
                     <>
                         <div className='w-4 h-4 border-2 border-black border-t-white/2 rounded-full animate-spin' />
-                        Signing in..
+                        Updating...
                     </>
                    ) : (
                     <>
-                        Sign In
+                        Update Profile
                     </>
                    )
 

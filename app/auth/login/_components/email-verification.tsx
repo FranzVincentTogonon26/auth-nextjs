@@ -52,7 +52,7 @@ export function EmailVerification({ email }: { email: string }) {
   }, [])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       <p className="text-sm text-muted-foreground mt-2">
         We sent you a verification link. Please check your email and click the
         link to verify your account.
@@ -60,7 +60,7 @@ export function EmailVerification({ email }: { email: string }) {
 
       <BetterAuthActionButton
         variant="outline"
-        className="w-full"
+        className="w-full h-11"
         successMessage="Verification email sent!"
         disabled={timeToNextResend > 0}
         action={async () => {

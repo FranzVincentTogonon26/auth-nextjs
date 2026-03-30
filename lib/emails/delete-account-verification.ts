@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { EmailVerificationTemplate } from '@/app/auth/emails/email-verification-template';
+import { DeleteAccountTemplate } from '@/app/auth/emails/email-delete-account';
 
 const resendApiKey = process.env.RESEND_API_KEY!;
 const resendFromEmail = process.env.RESEND_FROM_EMAIL!;
@@ -10,7 +10,7 @@ if (!resendApiKey || !resendFromEmail) {
 
 const resend = new Resend(resendApiKey);
 
-export async function sendEmailVerificationEmail({
+export async function sendDeleteAccountVerificationEmail({
   user,
   url,
 }: {
@@ -19,15 +19,21 @@ export async function sendEmailVerificationEmail({
 }) {
 
   try {
-    await resend.emails.send({
+
+    const { error } = await resend.emails.send({
       from: resendFromEmail,
       to: user.email,
-      subject: "Verify your email address",
-      react: EmailVerificationTemplate({ user, url }),
+      subject: "Delete your account",
+      react: DeleteAccountTemplate({ user, url }),
     });
-    console.log("Email sent successfully");
+
+    if (error) {
+      console.error("Failed to send delete-account email", error);
+      throw error;
+    }
+
   } catch (err) {
-    console.error("Failed to send email", err);
+    console.error("Failed to send delete-account email", err);
     throw err;
   }
 
