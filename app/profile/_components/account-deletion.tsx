@@ -8,7 +8,7 @@ export function AccountDeletion() {
     <BetterAuthActionButton
       requireAreYouSure
       variant="destructive"
-      className="w-full"
+      className="w-full h-10"
       successMessage="Account deletion initiated. Please check your email to confirm."
       action={() => authClient.deleteUser({ callbackURL: "/" })}
     >

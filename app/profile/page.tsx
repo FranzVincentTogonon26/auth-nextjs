@@ -8,6 +8,7 @@ import { redirect } from "next/navigation"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 import { ProfileUpdateForm } from "./_components/profile-update-form"
 import { SetPasswordButton } from "./_components/set-password-button"
@@ -15,6 +16,8 @@ import { ChangePasswordForm } from "./_components/change-password-form"
 import { SessionManagement } from "./_components/session-management"
 import { AccountLinking } from "./_components/account-linking"
 import { AccountDeletion } from "./_components/account-deletion"
+import { TwoFactorAuth } from "./_components/two-factor-auth"
+import { PasskeyManagement } from "./_components/passkey-management"
 
 export default async function ProfilePage(){
 
@@ -48,7 +51,7 @@ export default async function ProfilePage(){
                             <h1 className="text-3xl font-bold">
                                 {session.user.name || "User Profile"}
                             </h1>
-                            {/* <Badge>{session.user.role}</Badge> */}
+                            <Badge>{session.user.role}</Badge>
                         </div>
                         <p className="text-muted-foreground">{session.user.email}</p>
                     </div>
@@ -91,7 +94,7 @@ export default async function ProfilePage(){
                     <LoadingSuspense>
                         <SecurityTab
                         email={session.user.email}
-                        // isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
+                        isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
                         />
                     </LoadingSuspense>
                 </TabsContent>
@@ -158,9 +161,12 @@ async function SessionsTab({
   )
 }
 
-async function SecurityTab({ email } : { email: string }){
+async function SecurityTab({ email, isTwoFactorEnabled } : { email: string, isTwoFactorEnabled: boolean }){
 
-    const accounts = await auth.api.listUserAccounts({ headers: await headers() })
+    const [passkeys, accounts] = await Promise.all([
+        auth.api.listPasskeys({ headers: await headers() }),
+        auth.api.listUserAccounts({ headers: await headers() }),
+    ])
     const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
 
     return (
@@ -190,6 +196,29 @@ async function SecurityTab({ email } : { email: string }){
                 </CardContent>
             </Card>
         )}
+        { hasPasswordAccount && (
+            <Card>
+                <CardHeader className="flex items-center justify-between gap-2">
+                    <CardTitle>Two Factor Authentication</CardTitle>
+                    <Badge variant={isTwoFactorEnabled ? "default" : "secondary"}>
+                        {isTwoFactorEnabled ? "Enabled" : "Disabled"}
+                    </Badge>
+                </CardHeader>
+                <CardContent>
+                    <TwoFactorAuth isEnabled={isTwoFactorEnabled} />
+                </CardContent>
+            </Card>
+        )}
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Passkeys</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <PasskeyManagement passkeys={passkeys} />
+            </CardContent>
+        </Card>
+
         </div>
     )
 }

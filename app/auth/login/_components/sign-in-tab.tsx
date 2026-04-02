@@ -5,11 +5,13 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod' 
 import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { useRouter } from 'next/navigation'
+
+import { PasskeyButton } from "./passkey-button"
 
 const signInSchema = z.object({
     email: z.email().min(1),
@@ -62,6 +64,7 @@ export function SignInTab(
     const { isSubmitting } = form.formState
 
     return (
+      <div className="space-y-4">
         <form className="" onSubmit={form.handleSubmit(handleSignIn)}>
           <FieldGroup>
             <div className="space-y-7 mt-5">
@@ -76,7 +79,7 @@ export function SignInTab(
                     className='h-10 border-0'
                     type='email'
                     aria-invalid={fieldState.invalid}
-                    autoComplete="off"
+                    autoComplete="email webauthn"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -106,7 +109,7 @@ export function SignInTab(
                     className='h-10 border-0'
                     type='password'
                     aria-invalid={fieldState.invalid}
-                    autoComplete="off"
+                    autoComplete="current-password webauthn"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -133,5 +136,9 @@ export function SignInTab(
             </div>
           </FieldGroup>
         </form>
+
+      <PasskeyButton />
+
+      </div>
     )
 }
