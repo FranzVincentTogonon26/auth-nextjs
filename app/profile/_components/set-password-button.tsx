@@ -7,6 +7,7 @@ export function SetPasswordButton({ email }: { email: string }) {
   return (
     <BetterAuthActionButton
       variant="outline"
+      className="w-full h-10!"
       successMessage="Password reset email sent"
       action={() => {
         return authClient.requestPasswordReset({
