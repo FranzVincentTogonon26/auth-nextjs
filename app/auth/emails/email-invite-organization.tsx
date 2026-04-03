@@ -34,7 +34,7 @@ export function InviteOrganizationTemplate({
             borderRadius: "8px",
           }}
         >
-          <Heading>You{"'"}re invited to join ${organization.name}</Heading>
+          <Heading>You{"'"}re invited to join {organization.name}</Heading>
 
           <Text>Hello {inviter.name},</Text>
 

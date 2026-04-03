@@ -28,7 +28,7 @@ export function InvitesTab() {
       <div className="justify-end flex">
         <CreateInviteButton />
       </div>
-
+      <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -61,6 +61,7 @@ export function InvitesTab() {
           ))}
         </TableBody>
       </Table>
+      </div>
     </div>
   )
 }

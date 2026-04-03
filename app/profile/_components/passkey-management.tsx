@@ -120,7 +120,7 @@ export function PasskeyManagement({ passkeys }: { passkeys: Passkey[] }){
                       className='h-10 border-0'
                       type='text'
                       aria-invalid={fieldState.invalid}
-                      autoComplete="webauthn"
+                      autoComplete="off"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

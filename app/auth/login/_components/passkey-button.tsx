@@ -1,49 +1,48 @@
 "use client"
 
-import { BetterAuthActionButton } from "@/components/auth/better-auth-action-button"
 import { authClient } from "@/lib/auth/auth-client"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 export function PasskeyButton() {
   const router = useRouter()
   const { refetch } = authClient.useSession()
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    authClient.signIn.passkey(
-      { autoFill: true },
-      {
-        onSuccess() {
-          refetch()
-          router.push("/")
-        },
-      }
-    )
-  }, [router, refetch])
+  const handlePasskeySignIn = async () => {
+    if (isLoading) return
 
-  return (
-    <BetterAuthActionButton
-      variant="outline"
-      className="w-full h-11!"
-      action={async () => {
-        const res = await authClient.signIn.passkey(undefined, {
+    setIsLoading(true)
+    try {
+      const res = await authClient.signIn.passkey(
+        { autoFill: false },
+        {
           onSuccess: () => {
             refetch()
             router.push("/")
           },
-        })
-
-        console.log(res.error?.message)
-
-        // normalize return type
-        return {
-          error: res.error
-            ? { message: String(res.error.message) }
-            : null,
         }
-      }}
+      )
+
+      if (res.error) {
+        console.error("Passkey error:", res.error.message)
+      }
+    } catch (err) {
+      console.error("Passkey exception:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Button
+      variant="outline"
+      className="w-full h-11!"
+      onClick={handlePasskeySignIn}
+      disabled={isLoading}
     >
-      Use Passkey
-    </BetterAuthActionButton>
+      {isLoading ? "Authenticating..." : "Use Passkey"}
+    </Button>
   )
 }
