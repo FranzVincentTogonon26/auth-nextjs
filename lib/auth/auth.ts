@@ -61,7 +61,11 @@ export const auth = betterAuth({
     plugins: [
         nextCookies(),
         twoFactor(),
-        passkey(),
+        passkey({
+            rpName: "Better Auth",
+            rpID: "localhost",
+            origin: "http://localhost:3000",
+        }),
         adminPlugin({
             ac,
             roles: {

@@ -23,6 +23,7 @@ export function MembersTab() {
   }
 
   return (
+    <div className="rounded-md border">
     <Table>
       <TableHeader>
         <TableRow>
@@ -66,5 +67,6 @@ export function MembersTab() {
         ))}
       </TableBody>
     </Table>
+    </div>
   )
 }
